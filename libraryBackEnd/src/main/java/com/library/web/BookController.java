@@ -54,7 +54,7 @@ public class BookController {
 
     @RequestMapping(value="/get/booklist", method = RequestMethod.GET)
     @ResponseBody
-    public ArrayList<Book> getAllBooks(){
+    public ArrayList<Book> getAllBooks(HttpServletRequest request){
     	ArrayList<Book> books=bookService.getBookList();
     	return books;
     }
@@ -66,7 +66,7 @@ public class BookController {
     	
     	try {
     		User user = ((User) request.getSession().getAttribute("user"));
-    		if(!user.isAdmin()){throw new RuntimeException("你不是管理员！");}
+    		if(user.getIsAdmin()==0){throw new RuntimeException("你不是管理员！");}
 		} catch (Exception e) {
 			res.put("stateCode", "0");
             res.put("msg","你还没有登陆或者你不是管理员！");
@@ -100,7 +100,7 @@ public class BookController {
     	
     	try {
     		User user = ((User) request.getSession().getAttribute("user"));
-    		if(!user.isAdmin()){throw new RuntimeException("你不是管理员！");}
+    		if(user.getIsAdmin()==0){throw new RuntimeException("你不是管理员！");}
 		} catch (Exception e) {
 			res.put("stateCode", "0");
             res.put("msg","你还没有登陆或者你不是管理员！");
@@ -114,7 +114,7 @@ public class BookController {
     	}
 
     	newBook.setState(1); // 1表示图示还在图书馆
-    	newBook.setBookId("");
+    	newBook.setId("");
     	
     	boolean succ=bookService.createBook(newBook);
     	
@@ -138,14 +138,14 @@ public class BookController {
     	
     	try {
     		User user = ((User) request.getSession().getAttribute("user"));
-    		if(!user.isAdmin()){throw new RuntimeException("你不是管理员！");}
+    		if(user.getIsAdmin()==0){throw new RuntimeException("你不是管理员！");}
 		} catch (Exception e) {
 			res.put("stateCode", "0");
             res.put("msg","你还没有登陆或者你不是管理员！");
 			return res;
 		}
     	
-    	if(book.getBookId() == ""){
+    	if(book.getId() == ""){
     		res.put("stateCode", "0");
             res.put("msg","还没有指定bookId！");
             return res;

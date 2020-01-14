@@ -24,16 +24,17 @@ public class LoginController {
 	
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	@ResponseBody
-	public HashMap<String, String> loginCheck(HttpServletRequest request, String id, String passwd) {
+	public HashMap<String, String> loginCheck(HttpServletRequest request,String id, String account, String passwd) {
 
 		HashMap<String, String> res = new HashMap<String, String>();// 预定义结果
-		User targetUser = userService.selectUserById(id);
 
-		if ( id == null || passwd == null ) {
+		if (( id==null && account == null) || passwd == null ) {
 			res.put("stateCode", "0");
 			res.put("msg", "请检查参数id或passwd是否有误！");
 			return res;
 		}
+		
+		User targetUser = id == null ? userService.selectUserByAccount(account) : userService.selectUserById(id);
 
 		try {
 			if ( !targetUser.getPasswd().equals(passwd)) { throw new RuntimeException("用户名或密码错误"); }
@@ -44,7 +45,7 @@ public class LoginController {
 		}
 		
 		
-		if (targetUser.isAdmin()) {
+		if (targetUser.getIsAdmin() == 1) {
 			res.put("stateCode", "1");
 			res.put("msg", "管理员登陆成功！");
 		} else {

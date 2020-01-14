@@ -26,12 +26,21 @@ public class UserService {
 	}
 
 	/**
-	 * 查找用户信息
+	 * ID查找用户信息
 	 * @param id
 	 * @return
 	 */
     public User selectUserById(String id){
         return userDao.selectUserById(id);
+    }
+    
+    /**
+     * 账号查找用户信息
+     * @param id
+     * @return
+     */
+    public User selectUserByAccount(String account){
+    	return userDao.selectUserByAccount(account);
     }
 
     /**

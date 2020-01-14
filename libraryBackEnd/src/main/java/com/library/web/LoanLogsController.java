@@ -26,6 +26,7 @@ public class LoanLogsController {
 	@ResponseBody
 	public HashMap<String, String> borrowBook(HttpServletRequest request, String bookId){
 		HashMap<String, String> res = new HashMap<>();
+		
 		User user;
 		try {
 			user = (User) request.getSession().getAttribute("user");
@@ -36,6 +37,7 @@ public class LoanLogsController {
             res.put("msg","你没有登录哟！");
 			return res;
 		}
+		
 		boolean succ = loanLogsService.borrowBook(bookId, user.getId());
 		if(succ){
 			res.put("stateCode", "1");
@@ -43,7 +45,7 @@ public class LoanLogsController {
 			return res;
 		}else{
 			res.put("stateCode", "0");
-			res.put("msg","系统繁忙，请稍后重试！");
+			res.put("msg","该图书当前不在馆！");
 			return res;
 		}
 		
@@ -61,7 +63,7 @@ public class LoanLogsController {
 			return res;
 		}else{
 			res.put("stateCode", "0");
-			res.put("msg","系统繁忙，请稍后重试！");
+			res.put("msg","信息有误，此图书已经在馆！");
 			return res;
 		}
 		
@@ -74,7 +76,7 @@ public class LoanLogsController {
 		
 		try {
 			User user = (User) request.getSession().getAttribute("user");
-			if(user == null || !user.isAdmin()){ throw new RuntimeException("对方没有登录或者不是管理员！"); }
+			if(user == null || user.getIsAdmin()==0){ throw new RuntimeException("对方没有登录或者不是管理员！"); }
 		} catch (Exception e) {
 			res.put("stateCode", "0");
 			res.put("msg","你没有登录哟~或者说你不是管理员哟~");

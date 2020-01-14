@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @SuppressWarnings("serial")
 public class Book implements Serializable{
 
-	private String bookId;
+	private String id;
     private String name;
     private String author;
     private String publish;
@@ -21,12 +21,13 @@ public class Book implements Serializable{
     private int classId;
     private int pressmark;
     private int state;  // 1表示书在馆，0表示不在馆
+    private String imgSrc; // 图片地址
     
-	public String getBookId() {
-		return bookId;
+	public String getId() {
+		return id;
 	}
-	public void setBookId(String bookId) {
-		this.bookId = bookId;
+	public void setId(String id) {
+		this.id = id;
 	}
 	public String getName() {
 		return name;
@@ -96,9 +97,15 @@ public class Book implements Serializable{
 		this.state = state;
 	}
 	
+	public String getImgSrc() {
+		return imgSrc;
+	}
+	public void setImgSrc(String imgSrc) {
+		this.imgSrc = imgSrc;
+	}
 	@Override
 	public String toString() {
-		return "Book [bookId=" + bookId + ", name=" + name + ", author=" + author + ", publish=" + publish + ", isbn="
+		return "Book [bookId=" + id + ", name=" + name + ", author=" + author + ", publish=" + publish + ", isbn="
 				+ isbn + ", introduction=" + introduction + ", language=" + language + ", price=" + price + ", pubdate="
 				+ pubdate + ", classId=" + classId + ", pressmark=" + pressmark + ", state=" + state + "]";
 	}

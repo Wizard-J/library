@@ -34,12 +34,12 @@ public class BookService {
     }
 	
 	/**
-	 * 删除图书
+	 * 更新图书
 	 * @param book
 	 * @return
 	 */
 	public boolean updateBook(Book book){
-    	Book targetBook = getBookById(book.getBookId());
+    	Book targetBook = getBookById(book.getId());
     	if(book.getName() == null){
     		book.setName(targetBook.getName());
     		}
@@ -84,6 +84,15 @@ public class BookService {
 	 */
 	public Book getBookById(String id){
 	  	return bookDao.getBookById(id);
+	}
+	
+	/**
+	 * classid查找图书列表
+	 * @param id
+	 * @return
+	 */
+	public ArrayList<Book> getBookListByClassId(String classId){
+		return bookDao.getBookListByClassId(classId);
 	}
 
 	/**

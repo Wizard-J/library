@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.library.dao.LoanLogsDao;
+import com.library.entity.Book;
 import com.library.entity.LoanLogs;
 
 @Service
@@ -16,7 +17,7 @@ public class LoanLogsService {
     private LoanLogsDao loanLogsDao;
 	
 	@Autowired
-	private BookService bookservice;
+	private BookService bookService;
 
 	/**
 	 * 还书
@@ -35,6 +36,8 @@ public class LoanLogsService {
      * @return
      */
     public boolean borrowBook(String bookId,String readerId){
+    	Book book = bookService.getBookById(bookId);
+    	if(book.getState() == 0){ return false; } // 该图书不在馆
         return loanLogsDao.borrowBook(bookId,readerId);
     }
 
@@ -45,7 +48,7 @@ public class LoanLogsService {
     public ArrayList<LoanLogs> getLogs(){
     	ArrayList<LoanLogs> logs = loanLogsDao.getLoanLogList();
     	for (LoanLogs log : logs) {
-			log.setBook(bookservice.getBookById(log.getBookId()));
+			log.setBook(bookService.getBookById(log.getBookId()));
 		}
         return logs;
     }
@@ -58,7 +61,7 @@ public class LoanLogsService {
     public ArrayList<LoanLogs> getPersonalLogs(String readerId){
     	ArrayList<LoanLogs> logs = loanLogsDao.getPersonalLoanLogList(readerId);
     	for (LoanLogs log : logs) {
-			log.setBook(bookservice.getBookById(log.getBookId()));
+			log.setBook(bookService.getBookById(log.getBookId()));
 		}
         return logs;
     }

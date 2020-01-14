@@ -20,10 +20,11 @@ public class UserDao {
 	private JdbcTemplate jdbcTemplate;
 
 	private final static String DELETE_USER_SQL = "DELETE FROM user where id = ? ";
-	private final static String GET_USER_SQL = "SELECT * FROM user where id = ? ";
+	private final static String GET_USER_BY_ACCOUNT = "SELECT * FROM user where account = ? ";
+	private final static String GET_USER_BY_ID = "SELECT * FROM user where id = ? ";
 	private final static String UPDATE_USER_SQL = "UPDATE user set account = ? ,passwd = ? ,name = ? ,sex = ? ,birthday = ? ,address = ? ,number = ? where id = ? ";
 	private final static String ALL_USER_SQL = "SELECT * FROM user";
-	private final static String ADD_USER_SQL = "INSERT INTO user VALUES(?,?,?,?,?,?,?,?)";
+	private final static String ADD_USER_SQL = "INSERT INTO user VALUES(?,?,?,?,?,?,?,?,?)";
 
 	/**
 	 * 新增用户
@@ -41,9 +42,10 @@ public class UserDao {
 		Date birthday = user.getBirthday();
 		String address = user.getAddress();
 		String number = user.getNumber();
+		int isAdmin = user.getIsAdmin();
 
 		return jdbcTemplate.update(ADD_USER_SQL,
-				new Object[] { id, account, passwd, name, sex, birthday, address, number });
+				new Object[] { id, account, passwd, name, sex, birthday, address, number ,isAdmin});
 	}
 
 	/**
@@ -97,7 +99,7 @@ public class UserDao {
 					user.setBirthday(resultSet.getDate("birthday"));
 					user.setAddress(resultSet.getString("address"));
 					user.setNumber(resultSet.getString("number"));
-					user.setAdmin(!resultSet.getString("is_admin").equals(""));
+					user.setIsAdmin(resultSet.getInt("is_admin"));
 					userList.add(user);
 				}
 			}
@@ -108,12 +110,12 @@ public class UserDao {
 	/**
 	 * 查找单个用户信息
 	 * 
-	 * @param readerId
+	 * @param id
 	 * @return
 	 */
-	public User selectUserById(String readerId) {
+	public User selectUserById(String id) {
 		User user = new User();
-		jdbcTemplate.query(GET_USER_SQL, new Object[] { readerId }, new RowCallbackHandler() {
+		jdbcTemplate.query(GET_USER_BY_ID, new Object[] { id }, new RowCallbackHandler() {
 			public void processRow(ResultSet resultSet) throws SQLException {
 				resultSet.beforeFirst();
 				while (resultSet.next()) {
@@ -125,7 +127,33 @@ public class UserDao {
 					user.setBirthday(resultSet.getDate("birthday"));
 					user.setAddress(resultSet.getString("address"));
 					user.setNumber(resultSet.getString("number"));
-					user.setAdmin(!resultSet.getString("is_admin").equals(""));
+					user.setIsAdmin(resultSet.getInt("is_admin"));
+				}
+			}
+		});
+		return user;
+	}
+	/**
+	 * 查找单个用户信息
+	 * 
+	 * @param account
+	 * @return
+	 */
+	public User selectUserByAccount(String account) {
+		User user = new User();
+		jdbcTemplate.query(GET_USER_BY_ACCOUNT, new Object[] { account }, new RowCallbackHandler() {
+			public void processRow(ResultSet resultSet) throws SQLException {
+				resultSet.beforeFirst();
+				while (resultSet.next()) {
+					user.setId(resultSet.getString("id"));
+					user.setAccount(resultSet.getString("account"));
+					user.setPasswd(resultSet.getString("passwd"));
+					user.setName(resultSet.getString("name"));
+					user.setSex(resultSet.getString("sex"));
+					user.setBirthday(resultSet.getDate("birthday"));
+					user.setAddress(resultSet.getString("address"));
+					user.setNumber(resultSet.getString("number"));
+					user.setIsAdmin(resultSet.getInt("is_admin"));
 				}
 			}
 		});

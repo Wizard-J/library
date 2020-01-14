@@ -20,13 +20,14 @@ public class BookDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	private final static String ADD_BOOK = "INSERT INTO book VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+	private final static String ADD_BOOK = "INSERT INTO book VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	private final static String DELETE_BOOK = "delete from book where id = ?  ";
-	private final static String UPDATE_BOOK = "update book set name= ? ,author= ? ,publish= ? ,ISBN= ? ,introduction= ? ,language= ? ,price= ? ,pubdate= ? ,class_id= ? ,pressmark= ? ,state= ?  where book_id= ? ;";
+	private final static String UPDATE_BOOK = "update book set name= ? ,author= ? ,publish= ? ,ISBN= ? ,introduction= ? ,language= ? ,price= ? ,pubdate= ? ,class_id= ? ,pressmark= ? ,state= ?, img_src=?  where book_id= ? ;";
 	private final static String SELECT_ALL_BOOKS = "SELECT * FROM book ";
 	private final static String SELECT_BOOK_BY_NAME_OR_ABSTRACT = "SELECT * FROM book WHERE name like ? OR author like ? OR publish like ? OR introduction like ? OR language like ?";
 	private final static String SELECT_BOOK_BY_ID = "SELECT * FROM book WHERE id = ?   ";
-
+	private final static String SELECT_BOOK_BY_CLASSIFICATION_ID = "SELECT * FROM book WHERE class_id = ?   ";
+	
 	/**
 	 * 新增图书
 	 * 
@@ -46,10 +47,11 @@ public class BookDao {
 		Date pubdate = book.getPubdate();
 		int classId = book.getClassId();
 		int pressmark = book.getPressmark();
-		int state = book.getState();
+		int state = book.getState(); 
+		String imgSrc = book.getImgSrc();
 
 		return jdbcTemplate.update(ADD_BOOK, new Object[] { id, name, author, publish, isbn, introduction, language,
-				price, pubdate, classId, pressmark, state });
+				price, pubdate, classId, pressmark, state, imgSrc });
 	}
 
 	/**
@@ -69,7 +71,7 @@ public class BookDao {
 	 * @return
 	 */
 	public int updateBook(Book book) {
-		String bookId = book.getBookId();
+		String bookId = book.getId();
 		String name = book.getName();
 		String author = book.getAuthor();
 		String publish = book.getPublish();
@@ -81,8 +83,9 @@ public class BookDao {
 		int classId = book.getClassId();
 		int pressmark = book.getPressmark();
 		int state = book.getState();
+		String imgSrc = book.getImgSrc();
 		return jdbcTemplate.update(UPDATE_BOOK, new Object[] { name, author, publish, isbn, introduction, language,
-				price, pubdate, classId, pressmark, state, bookId });
+				price, pubdate, classId, pressmark, state,imgSrc, bookId });
 	}
 
 	/**
@@ -97,7 +100,7 @@ public class BookDao {
 			public void processRow(ResultSet resultSet) throws SQLException {
 				resultSet.beforeFirst();
 				while (resultSet.next()) {
-					book.setBookId(resultSet.getString("id"));
+					book.setId(resultSet.getString("id"));
 					book.setAuthor(resultSet.getString("author"));
 					book.setClassId(resultSet.getInt("class_id"));
 					book.setIntroduction(resultSet.getString("introduction"));
@@ -109,6 +112,7 @@ public class BookDao {
 					book.setPrice(resultSet.getBigDecimal("price"));
 					book.setState(resultSet.getInt("state"));
 					book.setPublish(resultSet.getString("publish"));
+					book.setImgSrc(resultSet.getString("img_src"));
 				}
 			}
 		});
@@ -129,7 +133,7 @@ public class BookDao {
 						resultSet.beforeFirst();
 						while (resultSet.next()) {
 							Book book = new Book();
-							book.setBookId(resultSet.getString("id"));
+							book.setId(resultSet.getString("id"));
 							book.setAuthor(resultSet.getString("author"));
 							book.setClassId(resultSet.getInt("class_id"));
 							book.setIntroduction(resultSet.getString("introduction"));
@@ -141,11 +145,46 @@ public class BookDao {
 							book.setPrice(resultSet.getBigDecimal("price"));
 							book.setState(resultSet.getInt("state"));
 							book.setPublish(resultSet.getString("publish"));
+							book.setImgSrc(resultSet.getString("img_src"));
 							books.add(book);
 						}
 
 					}
 				});
+		return books;
+	}
+	
+	/**
+	 * 按照分类id获取图书列表
+	 * 
+	 * @param classId
+	 * @return
+	 */
+	public ArrayList<Book> getBookListByClassId(String classId) {
+		ArrayList<Book> books = new ArrayList<Book>();
+		jdbcTemplate.query(SELECT_BOOK_BY_CLASSIFICATION_ID, new Object[] { classId }, new RowCallbackHandler() {
+			public void processRow(ResultSet resultSet) throws SQLException {
+				resultSet.beforeFirst();
+				while (resultSet.next()) {
+					Book book = new Book();
+					book.setId(resultSet.getString("id"));
+					book.setAuthor(resultSet.getString("author"));
+					book.setClassId(resultSet.getInt("class_id"));
+					book.setIntroduction(resultSet.getString("introduction"));
+					book.setIsbn(resultSet.getString("isbn"));
+					book.setLanguage(resultSet.getString("language"));
+					book.setName(resultSet.getString("name"));
+					book.setPressmark(resultSet.getInt("pressmark"));
+					book.setPubdate(resultSet.getDate("pubdate"));
+					book.setPrice(resultSet.getBigDecimal("price"));
+					book.setState(resultSet.getInt("state"));
+					book.setPublish(resultSet.getString("publish"));
+					book.setImgSrc(resultSet.getString("img_src"));
+					books.add(book);
+				}
+				
+			}
+		});
 		return books;
 	}
 
@@ -162,7 +201,7 @@ public class BookDao {
 				resultSet.beforeFirst();
 				while (resultSet.next()) {
 					Book book = new Book();
-					book.setBookId(resultSet.getString("id"));
+					book.setId(resultSet.getString("id"));
 					book.setPrice(resultSet.getBigDecimal("price"));
 					book.setState(resultSet.getInt("state"));
 					book.setPublish(resultSet.getString("publish"));
@@ -174,6 +213,7 @@ public class BookDao {
 					book.setIntroduction(resultSet.getString("introduction"));
 					book.setPressmark(resultSet.getInt("pressmark"));
 					book.setLanguage(resultSet.getString("language"));
+					book.setImgSrc(resultSet.getString("img_src"));
 					books.add(book);
 				}
 			}

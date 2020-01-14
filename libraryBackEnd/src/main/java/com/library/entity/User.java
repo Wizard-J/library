@@ -16,8 +16,7 @@ public class User implements Serializable{
     private Date birthday;
     private String address;
     private String number;
-    private String state;
-    private boolean isAdmin;
+    private int isAdmin;
     
 	public String getId() {
 		return id;
@@ -68,25 +67,17 @@ public class User implements Serializable{
 	public void setNumber(String number) {
 		this.number = number;
 	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-
-	public boolean isAdmin() {
+	public int getIsAdmin() {
 		return isAdmin;
 	}
-	public void setAdmin(boolean isAdmin) {
+	public void setIsAdmin(int isAdmin) {
 		this.isAdmin = isAdmin;
 	}
 	
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", account=" + account + ", passwd=" + passwd + ", name=" + name + ", sex=" + sex
-				+ ", birthday=" + birthday + ", address=" + address + ", number=" + number + ", state=" + state
-				+ ", isAdmin=" + isAdmin + "]";
+				+ ", birthday=" + birthday + ", address=" + address + ", number=" + number + ", isAdmin=" + isAdmin + "]";
 	}
     
 }

@@ -21,6 +21,26 @@ public class UserController {
 	@Autowired
     private UserService userService;
 	
+	/**
+	 * 新用户注册
+	 * @param request
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping(value = "/signin", method = RequestMethod.POST)
+	@ResponseBody
+	public HashMap<String,Object> createNewUser(HttpServletRequest request, User user){
+		HashMap<String,Object> res = new HashMap<>();
+		boolean succ = userService.createUser(user)!=0;
+		if(succ){
+			res.put("stateCode", "1");
+            res.put("msg","注册成功啦！");
+		}else{
+			res.put("stateCode", "0");
+			res.put("msg","系统繁忙，请稍后重试！");
+		}
+		return res;
+	} 
 	
 	/**
 	 * 查看用户列表
@@ -34,7 +54,7 @@ public class UserController {
 		User user;
 		try {
 			user = ((User) request.getSession().getAttribute("user")); // 只有管理员登陆过，才会在session中保存id,否则不会留下id
-			if(user == null || !user.isAdmin()){ throw new RuntimeException("你不是管理员"); }
+			if(user == null || user.getIsAdmin()==0){ throw new RuntimeException("你不是管理员"); }
 		} catch (Exception e) {
 			res.put("stateCode", "0");
             res.put("msg","你不是管理员！");
@@ -70,7 +90,7 @@ public class UserController {
 			return res;
 		}
     	
-    	if(!presentUser.isAdmin()){
+    	if(presentUser.getIsAdmin()==0){
     		res.put("stateCode", "1");
     		res.put("msg","不行哟，你不是管理员。");
     		return res;
@@ -182,7 +202,7 @@ public class UserController {
 		User user;
 		try {
 			user = ((User) request.getSession().getAttribute("user"));
-			if(user == null || !user.isAdmin()){ throw new RuntimeException("你不是管理员"); }
+			if(user == null || user.getIsAdmin()==0){ throw new RuntimeException("你不是管理员"); }
 		} catch (Exception e) {
 			res.put("stateCode", "0");
             res.put("msg","你不是管理员！");
